@@ -2,17 +2,23 @@ import json
 import requests
 
 def emotion_detector(text_to_analyze):
-    """
-    Analyzes the emotion of a given text using Watson NLP Emotion Predict function.
-    Handles blank input by returning None for all emotions if status code is 400.
-    """
+    # যদি ইনপুট একদম ফাঁকা স্ট্রিং হয়, তবে রিকোয়েস্ট পাঠানোর আগেই বা 400 কোডে None হ্যান্ডেল করা
+    if not text_to_analyze or text_to_analyze.strip() == "":
+        return {
+            'anger': None,
+            'disgust': None,
+            'fear': None,
+            'joy': None,
+            'sadness': None,
+            'dominant_emotion': None
+        }
+
     url = 'https://sn-watson-emotion.labs.skills.network/v1/watson.runtime.nlp.v1/NlpService/EmotionPredict'
     headers = {"grpc-metadata-mm-model-id": "emotion_aggregated-workflow_lang_en_stock"}
     payload = {"raw_document": {"text": text_to_analyze}}
 
     response = requests.post(url, json=payload, headers=headers)
 
-    # Error handling for status code 400 (Blank input)
     if response.status_code == 400:
         return {
             'anger': None,
@@ -32,7 +38,6 @@ def emotion_detector(text_to_analyze):
     joy_score = emotions['joy']
     sadness_score = emotions['sadness']
 
-    # Finding dominant emotion
     emotion_scores = {
         'anger': anger_score,
         'disgust': disgust_score,
