@@ -4,28 +4,24 @@
         <title>Emotion Detector</title>
         <script>
             function RunSentimentAnalysis() {
-                let textToAnalyze =
-                    document.getElementById("textToAnalyze").value;
-                let xhttp = new XMLHttpRequest();
+                var textToAnalyze = document.getElementById("textToAnalyze").value;
+                var xhttp = new XMLHttpRequest();
                 xhttp.onreadystatechange = function () {
                     if (this.readyState == 4) {
                         if (this.status == 200) {
-                            document.getElementById(
-                                "system_response",
-                            ).innerHTML = this.responseText;
+                            document.getElementById("system_response").innerHTML = this.responseText;
                         } else {
-                            document.getElementById(
-                                "system_response",
-                            ).innerHTML = "Error: " + this.status;
+                            console.error("Server returned status: " + this.status);
+                            document.getElementById("system_response").innerHTML =
+                                "Server returned error: " + this.status;
                         }
                     }
                 };
-                xhttp.open(
-                    "GET",
-                    "/emotionDetector?textToAnalyze=" +
-                        encodeURIComponent(textToAnalyze),
-                    true,
-                );
+                xhttp.onerror = function () {
+                    console.error("Network error occurred");
+                    document.getElementById("system_response").innerHTML = "Network error occurred";
+                };
+                xhttp.open("GET", "/emotionDetector?textToAnalyze=" + encodeURIComponent(textToAnalyze), true);
                 xhttp.send();
             }
         </script>
@@ -36,18 +32,23 @@
         <input
             type="text"
             id="textToAnalyze"
-            style="width: 400px; padding: 8px"
-            placeholder="Type something..."
+            style="width: 450px; padding: 10px; font-size: 14px"
+            placeholder="Type statement here..."
         /><br /><br />
         <button
             onclick="RunSentimentAnalysis()"
-            style="padding: 8px 16px; cursor: pointer"
+            style="padding: 10px 20px; font-size: 14px; cursor: pointer"
         >
             Run Emotion Detection
         </button>
         <div
             id="system_response"
-            style="margin-top: 25px; font-weight: bold; color: black"
+            style="
+                margin-top: 25px;
+                font-weight: bold;
+                font-size: 16px;
+                color: #111;
+            "
         ></div>
     </body>
 </html>
